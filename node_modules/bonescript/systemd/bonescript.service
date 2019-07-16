@@ -1,0 +1,12 @@
+[Unit]
+Description=Bonescript server
+ConditionPathExists=|/usr/share/bone101
+
+[Service]
+WorkingDirectory=/usr/share/bone101
+EnvironmentFile=/etc/default/node
+ExecStart=npm start -g bonescript
+SyslogIdentifier=bonescript
+
+[Install]
+WantedBy=multi-user.target

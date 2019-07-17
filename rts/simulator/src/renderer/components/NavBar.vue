@@ -25,7 +25,7 @@
         </li>
 
         <li>
-          <router-link v-bind:to="'/control'" class="">control</router-link>
+          <router-link v-bind:to="'/control'">control</router-link>
         </li>
 
         <li>
@@ -54,13 +54,10 @@
   display: flex;
   min-width: 200px;
   max-width: 300px;
-  /* margin-left: -20px; */
-  margin-right: 0px;
 }
 
 .ex-side li {
   list-style: none;
-  /* background-color: #ffffff; */
 }
 
 .router-link-active {
@@ -85,7 +82,6 @@ li {
 
 .ex-side {
   background-color: #ffffff;
-  /* position: fixed; */
   width: 185px;
   overflow-y: auto;
   overflow-x: hidden;
@@ -96,11 +92,6 @@ li {
   padding-left: 30px;
   padding-top: 80px;
 }
-
-/* a:hover {
-  text-decoration-color: black;
-  color: black;
-} */
 
 .ex-side a {
   color: #000;

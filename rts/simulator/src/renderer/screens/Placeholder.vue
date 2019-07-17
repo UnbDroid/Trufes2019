@@ -1,6 +1,6 @@
 <template>
   <div class="placeholder">
-    <router-view></router-view>
+    <router-view class="router"></router-view>
   </div>
 </template>
 
@@ -20,12 +20,12 @@ export default {
 <style lang="css" scoped>
 
 .placeholder {
-  /* color: #fff; */
+  /* pointer-events: none; */
   z-index: 11;
   display: flex;
   padding: 50px 50px 0px 50px;
   width: 100%;
-  /* background-color: #000000 */
 }
+
 
 </style>

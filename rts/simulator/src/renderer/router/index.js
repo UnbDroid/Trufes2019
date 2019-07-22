@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Home from '@/screens/Home'
 import Teste from '@/screens/Teste'
 import Second from '@/screens/Second'
+import Control from '@/screens/Control'
 
 Vue.use(Router)
 
@@ -14,9 +15,9 @@ export default new Router({
       component: Teste
     },
     {
-      path: '/second',
-      name: 'second',
-      component: Second
+      path: '/control',
+      name: 'Control',
+      component: Control
     },
   ]
 })

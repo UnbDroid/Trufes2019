@@ -88,10 +88,10 @@ class Directions {
   }
   
   
-  calculatePID() {
-      let KP = 0  // 0.0000001
-      let KI = 0 //0.00000005
-      let KD = 0
+  async calculatePID() {
+      let KP = 0.0000004
+      let KI = 0.0000000
+      let KD = 0.0000000
       let mlb_enc = rc.encoder(this.motor_left_bottom)
       let mlt_enc = rc.encoder(this.motor_left_top)
       let mrt_enc = rc.encoder(this.motor_right_top)
@@ -99,6 +99,7 @@ class Directions {
       let error_left = (Math.abs(mlt_enc) + Math.abs(mlb_enc))/2.0;
       let error_right = (Math.abs(mrt_enc) + Math.abs(mrb_enc))/2.0;
       let error = error_left - error_right;
+      
 
       this.integral += error;
       
@@ -110,14 +111,17 @@ class Directions {
       
       let derivate = error - this.lastError;
       let adjust = (KP * error) + (KI*this.integral) + (KD*derivate);
+      console.log("Ajuste: " + adjust)
+      console.log("Erro: " + error)
       
       this.mlt_pwr -= adjust
       this.mlb_pwr -= adjust
       this.mrt_pwr += adjust
       this.mrt_pwr += adjust
+      
       console.log(mlb_enc, mlt_enc, mrt_enc, mrb_enc)
       
-      comm.sendEncoderValues(mlb_enc, mlt_enc, mrt_enc, mrb_enc);
+      // comm.sendEncoderValues(mlb_enc, mlt_enc, mrt_enc, mrb_enc);
       // this.comm.sendPIDValues(adjust, error, this.integral, derivate, KP, KI, KD,
                                   // error_left, error_right, mlb_enc, mlt_enc, mrt_enc, mrb_enc);
       // this.comm.sendMotorValues(this.mlb_pwr, this.mlt_pwr, this.mrt_pwr, this.mrt_pwr)  
@@ -128,7 +132,10 @@ class Directions {
 
 var c = new Directions();
 let comm = new Communication();
-c.goFoward()
+while(true) {
+  c.goFoward();  
+}
+
 
 
 

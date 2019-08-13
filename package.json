@@ -11,6 +11,6 @@
   "dependencies": {
     "bonescript": "^0.7.1",
     "nan": "^2.14.0",
-    "roboticscape": "file:source/node-roboticscape"
+    "roboticscape": "file:node-roboticscape"
   }
 }

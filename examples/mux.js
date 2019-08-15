@@ -22,12 +22,6 @@ b.digitalWrite(s1, 1);
 b.digitalWrite(s2, 0);
 b.digitalWrite(s3, 0);
 
-// setInterval(seletor, 3000);
-//setInterval(saida, 100);
-
-
-setInterval(leitura_garra, 10);
-
 class Filtro {
 
   media_simples(vetor) {
@@ -177,13 +171,13 @@ function seletor(){
         b.digitalWrite(s1, 0);
         b.digitalWrite(s2, 0);
         b.digitalWrite(s3, 0);
-        ldrs[i] = b.analogRead(s0); 
+        ldrs[i] = b.analogRead(s0);
         i++;
     }else if(i%8 == 1){
         b.digitalWrite(s1, 0);
         b.digitalWrite(s2, 0);
         b.digitalWrite(s3, 1);
-        ldrs[i] = b.analogRead(s0); 
+        ldrs[i] = b.analogRead(s0);
         i++;
     }else if(i%8 == 2){
         b.digitalWrite(s1, 0);
@@ -201,13 +195,13 @@ function seletor(){
         b.digitalWrite(s1, 1);
         b.digitalWrite(s2, 0);
         b.digitalWrite(s3, 0);
-        ldrs[i] = b.analogRead(s0); 
+        ldrs[i] = b.analogRead(s0);
         i++;
     }else if(i%8 == 5){
         b.digitalWrite(s1, 1);
         b.digitalWrite(s2, 0);
         b.digitalWrite(s3, 1);
-        ldrs[i] = b.analogRead(s0);        
+        ldrs[i] = b.analogRead(s0);
         i++;
     }else if(i%8 == 6){
         b.digitalWrite(s1, 1);
@@ -224,145 +218,204 @@ function seletor(){
     }
 }
 
-entrada()
+//entrada()
 
-// function saida(){
-    
-//     var novo = new Filtro()
-    
-//     let ldr1 = b.analogRead(s0);
-//     ldr1 = 1/ldr1;
-//     ldr1 *= 1000;
-//     ldr1 = math.round(ldr1);
-    
-//     if(modo == 1) {
-//       numeros.push(ldr1)
-//       if(numeros.length == elementos) {
-//         console.log(novo.media_simples(numeros))
-//         numeros = []
-//       }
-//     }
-//     else if(modo == 2) {
-//       numeros.push(ldr1)
-//       if(numeros.length == elementos) {
-//         console.log(novo.media_movel(numeros))
-//         numeros.shift()
-//         valida = 1
-//       }
-//       else if(valida == 1) {
-//         console.log(novo.media_movel(numeros))
-//         numeros.shift()
-//       }
-//     }
-//     else if(modo == 3) {
-//       numeros.push(ldr1)
-//       if(numeros.length == elementos) {
-//         console.log(novo.media_ordenada(numeros))
-//         numeros = []
-//       }
-//     }
-//     else if(modo == 4) {
-//       console.log(novo.media_ponderada(ldr1))
-//     }
-    
-    
-    
-    
+function saida(){
 
-// }
+    var novo = new Filtro()
 
-function navegacao(){
-   let i=0, ldr_esquerda_frente = [], ldr_direita_frente = [], ldr_esquerda_tras = [], ldr_direita_tras = [], ldr_garra = [], ldr, ldr_matriz = [[2, 2], [2, 2]], resultado;
+    let ldr1 = b.analogRead(s0);
+    ldr1 = 1/ldr1;
+    ldr1 *= 1000;
+    ldr1 = math.round(ldr1);
+
+    if(modo == 1) {
+      numeros.push(ldr1)
+      if(numeros.length == elementos) {
+        console.log(novo.media_simples(numeros))
+        numeros = []
+      }
+    }
+    else if(modo == 2) {
+      numeros.push(ldr1)
+      if(numeros.length == elementos) {
+        console.log(novo.media_movel(numeros))
+        numeros.shift()
+        valida = 1
+      }
+      else if(valida == 1) {
+        console.log(novo.media_movel(numeros))
+        numeros.shift()
+      }
+    }
+    else if(modo == 3) {
+      numeros.push(ldr1)
+      if(numeros.length == elementos) {
+        console.log(novo.media_ordenada(numeros))
+        numeros = []
+      }
+    }
+    else if(modo == 4) {
+      console.log(novo.media_ponderada(ldr1))
+    }
+}
+
+let ldr_esquerda_frente = [], ldr_direita_frente = [], ldr_esquerda_tras = [], ldr_direita_tras = [], ldr_garra = [], ldr, ldr_matriz = [[2, 2], [2, 2]];
+let j=0, resultado, bloco, nave, garra;
+
+function roda_ldr_nave() {
+  nave = setInterval(ldr_navegacao, 100);
+}
+
+function para_ldr_nave(){
+  clearTimeout(ldr_nave);
+}
+
+function para_ldr_garra(){
+  clearTimeout(ldr_garra);
+}
+
+function roda_ldr_garra() {
+  garra = setInterval(ldr_garra, 100);
+}
+
+function ldr_navegacao(){
+
    var novo = new Filtro()
-   
+
     if(i%4 == 0){
         b.digitalWrite(s1, 0);
         b.digitalWrite(s2, 0);
         b.digitalWrite(s3, 0);
-        ldr = b.analogRead(s0); 
+        ldr = b.analogRead(s0);
         ldr_direita_frente.push(ldr);
-        resultado = novo.media_movel(ldr_direita_frente);
         if(ldr_direita_frente.length == elementos) {
+          resultado = novo.media_movel(ldr_direita_frente);
           console.log("ldr direita frente = " + resultado);
+          ldr_matriz[0][1] = resultado;
           ldr_direita_frente.shift();
-          // Se for preto, ldr[0][1] = preto;
           valida = 1;
         }
         else if(valida == 1) {
+          resultado = novo.media_movel(ldr_direita_frente);
           console.log("ldr direita frente = " + resultado);
+          ldr_matriz[0][1] = resultado;
           ldr_direita_frente.shift();
         }
-        ldr_matriz[0][1] = resultado;
-        i++;
+        j++;
     }else if(i%4 == 1){
         b.digitalWrite(s1, 0);
         b.digitalWrite(s2, 0);
         b.digitalWrite(s3, 1);
-        ldr = b.analogRead(s0); 
+        ldr = b.analogRead(s0);
         ldr_direita_tras.push(ldr);
-        resultado = novo.media_movel(ldr_direita_tras);
         if(ldr_direita_tras.length == elementos) {
+          resultado = novo.media_movel(ldr_direita_tras);
           console.log("ldr direita tras = " + resultado);
+          ldr_matriz[1][1] = resultado
           ldr_direita_tras.shift();
-          // Se for preto, ldr[1][1] = preto;
           valida = 1;
         }
         else if(valida == 1) {
+          resultado = novo.media_movel(ldr_direita_tras);
           console.log("ldr direita tras = " + resultado);
+          ldr_matriz[1][1] = resultado
           ldr_direita_tras.shift();
         }
-        ldr_matriz[1][1] = resultado
-        i++;
+        j++;
     }else if(i%4 == 2){
         b.digitalWrite(s1, 0);
         b.digitalWrite(s2, 1);
         b.digitalWrite(s3, 0);
-        ldr = b.analogRead(s0); 
+        ldr = b.analogRead(s0);
         ldr_esquerda_frente.push(ldr);
-        resultado = novo.media_movel(ldr_esquerda_frente);
         if(ldr_esquerda_frente.length == elementos) {
+          resultado = novo.media_movel(ldr_esquerda_frente);
           console.log("ldr esquerda frente = " + resultado);
+          ldr_matriz[0][0] = resultado;
           ldr_esquerda_frente.shift();
-          // Se for preto, ldr[0][0] = preto;
           valida = 1;
         }
         else if(valida == 1) {
+          resultado = novo.media_movel(ldr_esquerda_frente);
           console.log("ldr esquerda frente = " + resultado);
+          ldr_matriz[0][0] = resultado;
           ldr_esquerda_frente.shift();
         }
-        ldr_matriz[0][0] = resultado; 
-        i++;
-        
+        j++;
+
     }else if(i%4 == 3){
         b.digitalWrite(s1, 0);
         b.digitalWrite(s2, 1);
         b.digitalWrite(s3, 1);
-        ldr = b.analogRead(s0); 
+        ldr = b.analogRead(s0);
         ldr_esquerda_tras.push(ldr);
-        resultado = novo.media_movel(ldr_esquerda_tras;
         if(ldr_esquerda_tras.length == elementos) {
+          resultado = novo.media_movel(ldr_esquerda_tras);
           console.log("ldr esquerda tras = " + resultado);
+          ldr_matriz[1][0] = resultado;
           ldr_esquerda_tras.shift();
-          // Se for preto, ldr[1][0] = preto;
           valida = 1;
         }
         else if(valida == 1) {
+          resultado = novo.media_movel(ldr_esquerda_tras);
           console.log("ldr esquerda tras = " + resultado);
+          ldr_matriz[1][0] = resultado;
           ldr_esquerda_tras.shift();
         }
-        ldr_matriz[1][0] = resultado;
-        i++;
+        j=0;
     }
-    console.log(ldr_matriz[0][0]);
-    console.log(ldr_matriz[0][1]);
-    console.log(ldr_matriz[1][0]);
-    console.log(ldr_matriz[1][1]);
+    console.log("[" + ldr_matriz[0][0] + "|" + ldr_matriz[0][1] "]");
+    console.log("[" + ldr_matriz[1][0] + "|" + ldr_matriz[1][1] "]");
+
+    //Alinhamento
+    // if(ldr_matriz[0][0] == 0 && ldr_matriz[0][1] == 1 && ldr_matriz[1][0] == 1 && ldr_matriz[1][1] == 1) {
+    //   while(ldr_matriz[0][0] == 0) {
+    //     //gira sentido horario
+    //   }
+    // }
+    // else if(ldr_matriz[0][0] == 1 && ldr_matriz[0][1] == 1 && ldr_matriz[1][0] == 0 && ldr_matriz[1][1] == 1 ){
+    //   while(ldr_matriz[1][0] == 0) {
+    //     //gira sentido anti-horário
+    //   }
+    // }
+    // else if(ldr_matriz[0][0] == 1 && ldr_matriz[0][1] == 0 && ldr_matriz[1][0] == 1 && ldr_matriz[1][1] == 1){
+    //   while(ldr_matriz[0][1] == 0) {
+    //     //gira sentido anti-horario
+    //   }
+    // }
+    // else if(ldr_matriz[0][0] == 1 && ldr_matriz[0][1] == 1 && ldr_matriz[1][0] == 1 && ldr_matriz[1][1] == 0){
+    //   while(ldr_matriz[1][1] == 0) {
+    //     //girar sentido horario
+    //   }
+    // }
+    // else if(ldr_matriz[0][0] == 1 && ldr_matriz[0][1] == 0 && ldr_matriz[1][0] == 0 && ldr_matriz[1][1] == 0){
+    //   while(ldr_matriz[0][0] == 1) {
+    //     //girar anti-horario
+    //   }
+    // }
+    // else if(ldr_matriz[0][0] == 0 && ldr_matriz[0][1] == 0 && ldr_matriz[1][0] == 1 && ldr_matriz[1][1] == 0){
+    //   while (ldr_matriz[1][0] == 1) {
+    //     //girar horario
+    //   }
+    // }
+    // else if(ldr_matriz[0][0] == 0 && ldr_matriz[0][1] == 1 && ldr_matriz[1][0] == 0 && ldr_matriz[1][1] == 0){
+    //   while(ldr_matriz[0][1] == 1) {
+    //     //girar horario
+    //   }
+    // }
+    // else if (ldr_matriz[0][0] == 0 && ldr_matriz[0][1] == 0 && ldr_matriz[1][0] == 0 && ldr_matriz[1][1] == 1) {
+    //   while (ldr_matriz[1][1] == 1) {
+    //     //girar anti-horario
+    //   }
+    // }
+
 }
 
-function leitura_garra(){
+function ldr_garra(){
   let ldr, ldr_garra = [], itens = 10;
   let filtro = new Filtro();
-  // pausa setinterval navegação
+
   b.digitalWrite(s1, 1);
   b.digitalWrite(s2, 1);
   b.digitalWrite(s3, 1);
@@ -381,7 +434,24 @@ function leitura_garra(){
   //Volta interval navegação
 }
 
+function ladar() {
+  //ladar diz se viu bloco
+  let bloco = false;
+  if(!bloco) {
+    return false
+  }
+  else if(bloco){
+  return true;}
+}
 
 
 
-
+//enquanto o ladar não achar bloco, as leituras são do ldr do chão
+// while (!ladar()) {
+//   roda_ldr_nave();
+// }
+// para_nave();
+//vai pro bloco
+// roda_ldr_garra();
+// para_ldr_garra();
+//seja feliz e leva pra lavanderia

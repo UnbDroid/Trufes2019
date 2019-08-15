@@ -1,12 +1,12 @@
 var rc = require('roboticscape');
 var b = require('bonescript');
-var scanf = require('scanf');
+//var scanf = require('scanf');
 var math = require('mathjs');
 
 var s0 = 'P9_39'
-var s1 = 'P9_28'
-var s2 = 'P9_41'
-var s3 = 'P9_23'
+var s1 = 'P9_28' //C
+var s2 = 'P9_41' //B
+var s3 = 'P9_23' //A
 
 var minimo_preto = 800
 var maximo_preto = 1400
@@ -23,10 +23,8 @@ b.digitalWrite(s2, 0);
 b.digitalWrite(s3, 0);
 
 // setInterval(seletor, 3000);
-//setInterval(saida, 100);
-
-
-setInterval(leitura_garra, 10);
+setInterval(navegacao, 500);
+//setInterval(leitura_garra, 10);
 
 class Filtro {
 
@@ -151,80 +149,80 @@ class Filtro {
 
 }
 
-function entrada() {
+// function entrada() {
 
-  console.log("Digite 1 para media simples\nDigite 2 para media movel\nDigite 3 para media ordenada\nDigite 4 para media ponderada\n >> ")
-  modo = scanf('%d')
-  console.log(modo)
-  switch (modo) {
-    case 1:
-      break
-    case 2:
-      break
-    case 3:
-      break
-    case 4:
-      break
-    default:
-      console.log('errouuuu')
-      entrada()
-  }
-}
+//   console.log("Digite 1 para media simples\nDigite 2 para media movel\nDigite 3 para media ordenada\nDigite 4 para media ponderada\n >> ")
+//   modo = scanf('%d')
+//   console.log(modo)
+//   switch (modo) {
+//     case 1:
+//       break
+//     case 2:
+//       break
+//     case 3:
+//       break
+//     case 4:
+//       break
+//     default:
+//       console.log('errouuuu')
+//       entrada()
+//   }
+// }
 
-function seletor(){
-    let i=0;
-    if(i%8 == 0){
-        b.digitalWrite(s1, 0);
-        b.digitalWrite(s2, 0);
-        b.digitalWrite(s3, 0);
-        ldrs[i] = b.analogRead(s0); 
-        i++;
-    }else if(i%8 == 1){
-        b.digitalWrite(s1, 0);
-        b.digitalWrite(s2, 0);
-        b.digitalWrite(s3, 1);
-        ldrs[i] = b.analogRead(s0); 
-        i++;
-    }else if(i%8 == 2){
-        b.digitalWrite(s1, 0);
-        b.digitalWrite(s2, 1);
-        b.digitalWrite(s3, 0);
-        ldrs[i] = b.analogRead(s0);
-        i++;
-    }else if(i%8 == 3){
-        b.digitalWrite(s1, 0);
-        b.digitalWrite(s2, 1);
-        b.digitalWrite(s3, 1);
-        ldrs[i] = b.analogRead(s0);
-        i++;
-    }else if(i%8 == 4){
-        b.digitalWrite(s1, 1);
-        b.digitalWrite(s2, 0);
-        b.digitalWrite(s3, 0);
-        ldrs[i] = b.analogRead(s0); 
-        i++;
-    }else if(i%8 == 5){
-        b.digitalWrite(s1, 1);
-        b.digitalWrite(s2, 0);
-        b.digitalWrite(s3, 1);
-        ldrs[i] = b.analogRead(s0);        
-        i++;
-    }else if(i%8 == 6){
-        b.digitalWrite(s1, 1);
-        b.digitalWrite(s2, 1);
-        b.digitalWrite(s3, 0);
-        ldrs[i] = b.analogRead(s0);
-        i++;
-    }else if(i%8 == 7){
-        b.digitalWrite(s1, 1);
-        b.digitalWrite(s2, 1);
-        b.digitalWrite(s3, 1);
-        ldrs[i] = b.analogRead(s0);
-        i=0;
-    }
-}
+// function seletor(){
+//     let i=0;
+//     if(i%8 == 0){
+//         b.digitalWrite(s1, 0);
+//         b.digitalWrite(s2, 0);
+//         b.digitalWrite(s3, 0);
+//         ldrs[i] = b.analogRead(s0); 
+//         i++;
+//     }else if(i%8 == 1){
+//         b.digitalWrite(s1, 0);
+//         b.digitalWrite(s2, 0);
+//         b.digitalWrite(s3, 1);
+//         ldrs[i] = b.analogRead(s0); 
+//         i++;
+//     }else if(i%8 == 2){
+//         b.digitalWrite(s1, 0);
+//         b.digitalWrite(s2, 1);
+//         b.digitalWrite(s3, 0);
+//         ldrs[i] = b.analogRead(s0);
+//         i++;
+//     }else if(i%8 == 3){
+//         b.digitalWrite(s1, 0);
+//         b.digitalWrite(s2, 1);
+//         b.digitalWrite(s3, 1);
+//         ldrs[i] = b.analogRead(s0);
+//         i++;
+//     }else if(i%8 == 4){
+//         b.digitalWrite(s1, 1);
+//         b.digitalWrite(s2, 0);
+//         b.digitalWrite(s3, 0);
+//         ldrs[i] = b.analogRead(s0); 
+//         i++;
+//     }else if(i%8 == 5){
+//         b.digitalWrite(s1, 1);
+//         b.digitalWrite(s2, 0);
+//         b.digitalWrite(s3, 1);
+//         ldrs[i] = b.analogRead(s0);        
+//         i++;
+//     }else if(i%8 == 6){
+//         b.digitalWrite(s1, 1);
+//         b.digitalWrite(s2, 1);
+//         b.digitalWrite(s3, 0);
+//         ldrs[i] = b.analogRead(s0);
+//         i++;
+//     }else if(i%8 == 7){
+//         b.digitalWrite(s1, 1);
+//         b.digitalWrite(s2, 1);
+//         b.digitalWrite(s3, 1);
+//         ldrs[i] = b.analogRead(s0);
+//         i=0;
+//     }
+// }
 
-entrada()
+// entrada()
 
 // function saida(){
     
@@ -271,96 +269,121 @@ entrada()
 
 // }
 
+
+let j = 0, ldr_esquerda_frente = [], ldr_direita_frente = [], ldr_esquerda_tras = [], ldr_direita_tras = [], ldr_garra = [], ldr, ldr_matriz = [[2, 2], [2, 2]], resultado_nav;
+
 function navegacao(){
-   let i=0, ldr_esquerda_frente = [], ldr_direita_frente = [], ldr_esquerda_tras = [], ldr_direita_tras = [], ldr_garra = [], ldr, ldr_matriz = [[2, 2], [2, 2]], resultado;
+
    var novo = new Filtro()
    
-    if(i%4 == 0){
+    if(j%4 == 0){
         b.digitalWrite(s1, 0);
-        b.digitalWrite(s2, 0);
+        b.digitalWrite(s2, 1);
         b.digitalWrite(s3, 0);
         ldr = b.analogRead(s0); 
+        ldr = 1/ldr;
+        ldr *= 1000;
+        ldr = math.round(ldr);
+        //console.log("ldr" + ldr);
         ldr_direita_frente.push(ldr);
-        resultado = novo.media_movel(ldr_direita_frente);
         if(ldr_direita_frente.length == elementos) {
-          console.log("ldr direita frente = " + resultado);
+          resultado_nav = novo.media_movel(ldr_direita_frente);
+          console.log("ldr direita frente = " + resultado_nav);
+          ldr_matriz[0][1] = resultado_nav;
           ldr_direita_frente.shift();
           // Se for preto, ldr[0][1] = preto;
           valida = 1;
         }
         else if(valida == 1) {
-          console.log("ldr direita frente = " + resultado);
+          resultado_nav = novo.media_movel(ldr_esquerda_tras);
+          console.log("ldr direita frente = " + resultado_nav);
+          ldr_matriz[0][1] = resultado_nav;
           ldr_direita_frente.shift();
         }
-        ldr_matriz[0][1] = resultado;
-        i++;
-    }else if(i%4 == 1){
+        j++;
+    }else if(j%4 == 1){
+        console.log("entrei")
         b.digitalWrite(s1, 0);
-        b.digitalWrite(s2, 0);
+        b.digitalWrite(s2, 1);
         b.digitalWrite(s3, 1);
         ldr = b.analogRead(s0); 
+        ldr = 1/ldr;
+        ldr *= 1000;
+        ldr = math.round(ldr);
         ldr_direita_tras.push(ldr);
-        resultado = novo.media_movel(ldr_direita_tras);
         if(ldr_direita_tras.length == elementos) {
-          console.log("ldr direita tras = " + resultado);
+          resultado_nav = novo.media_movel(ldr_direita_tras);
+          console.log("ldr direita tras = " + resultado_nav);
+          ldr_matriz[1][1] = resultado_nav
           ldr_direita_tras.shift();
           // Se for preto, ldr[1][1] = preto;
           valida = 1;
         }
         else if(valida == 1) {
-          console.log("ldr direita tras = " + resultado);
+          resultado_nav = novo.media_movel(ldr_esquerda_tras);
+          console.log("ldr direita tras = " + resultado_nav);
+          ldr_matriz[1][1] = resultado_nav
           ldr_direita_tras.shift();
         }
-        ldr_matriz[1][1] = resultado
-        i++;
-    }else if(i%4 == 2){
+        j++;
+    }else if(j%4 == 2){
         b.digitalWrite(s1, 0);
-        b.digitalWrite(s2, 1);
-        b.digitalWrite(s3, 0);
+        b.digitalWrite(s2, 0);
+        b.digitalWrite(s3, 1);
         ldr = b.analogRead(s0); 
+        ldr = 1/ldr;
+        ldr *= 1000;
+        ldr = math.round(ldr);
         ldr_esquerda_frente.push(ldr);
-        resultado = novo.media_movel(ldr_esquerda_frente);
+        console.log("ldr" + ldr);
         if(ldr_esquerda_frente.length == elementos) {
-          console.log("ldr esquerda frente = " + resultado);
+          resultado_nav = novo.media_movel(ldr_esquerda_frente);
+          console.log("ldr esquerda frente = " + resultado_nav);
+          ldr_matriz[0][0] = resultado_nav; 
           ldr_esquerda_frente.shift();
           // Se for preto, ldr[0][0] = preto;
           valida = 1;
         }
         else if(valida == 1) {
-          console.log("ldr esquerda frente = " + resultado);
+          resultado_nav = novo.media_movel(ldr_esquerda_tras);
+          console.log("ldr esquerda frente = " + resultado_nav);
+          ldr_matriz[0][0] = resultado_nav; 
           ldr_esquerda_frente.shift();
         }
-        ldr_matriz[0][0] = resultado; 
-        i++;
+        j++;
         
-    }else if(i%4 == 3){
-        b.digitalWrite(s1, 0);
-        b.digitalWrite(s2, 1);
-        b.digitalWrite(s3, 1);
+    }else if(j%4 == 3){
+        b.digitalWrite(s1, 1);
+        b.digitalWrite(s2, 0);
+        b.digitalWrite(s3, 0);
         ldr = b.analogRead(s0); 
+        ldr = 1/ldr;
+        ldr *= 1000;
+        ldr = math.round(ldr);
         ldr_esquerda_tras.push(ldr);
-        resultado = novo.media_movel(ldr_esquerda_tras;
         if(ldr_esquerda_tras.length == elementos) {
-          console.log("ldr esquerda tras = " + resultado);
+          resultado_nav = novo.media_movel(ldr_esquerda_tras);
+          console.log("ldr esquerda tras = " + resultado_nav);
+          ldr_matriz[1][0] = resultado_nav;
           ldr_esquerda_tras.shift();
           // Se for preto, ldr[1][0] = preto;
           valida = 1;
         }
         else if(valida == 1) {
-          console.log("ldr esquerda tras = " + resultado);
+          resultado_nav = novo.media_movel(ldr_esquerda_tras);
+          console.log("ldr esquerda tras = " + resultado_nav);
+          ldr_matriz[1][0] = resultado_nav;
           ldr_esquerda_tras.shift();
         }
-        ldr_matriz[1][0] = resultado;
-        i++;
+        j = 0;
     }
-    console.log(ldr_matriz[0][0]);
-    console.log(ldr_matriz[0][1]);
-    console.log(ldr_matriz[1][0]);
-    console.log(ldr_matriz[1][1]);
+    console.log("Matriz")
+    console.log("[" + ldr_matriz[0][0] + "|" + ldr_matriz[0][1] + "]");
+    console.log("[" + ldr_matriz[1][0] + "|" + ldr_matriz[1][1] + "]");
 }
 
 function leitura_garra(){
-  let ldr, ldr_garra = [], itens = 10;
+  let ldr, ldr_garra = [], itens = 10, resultado_garra;
   let filtro = new Filtro();
   // pausa setinterval navegação
   b.digitalWrite(s1, 1);
@@ -373,12 +396,14 @@ function leitura_garra(){
   b.digitalWrite(s3, 1);
   ldr = b.analogRead(s0);
   ldr_garra.push(ldr);
+  resultado_garra = filtro.media_movel();
   if(ldr_garra.length == itens){
-    console.log(filtro.media_movel());
+    console.log(resultado_garra);
     ldr_garra.shift();
     ldr_garra.shift();
   }
   //Volta interval navegação
+  return resultado_garra
 }
 
 

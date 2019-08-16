@@ -1,6 +1,6 @@
 var rc = require('roboticscape');
 var b = require('bonescript');
-//var scanf = require('scanf');
+var scanf = require('scanf');
 var math = require('mathjs');
 
 var s0 = 'P9_39'
@@ -18,9 +18,9 @@ let modo = 0, numeros = [], elementos = 5, valida = 0, ldrs = [[]];
 b.pinMode(s1, b.OUTPUT);
 b.pinMode(s2, b.OUTPUT);
 b.pinMode(s3, b.OUTPUT);
-b.digitalWrite(s1, 1);
+b.digitalWrite(s1, 0);
 b.digitalWrite(s2, 0);
-b.digitalWrite(s3, 0);
+b.digitalWrite(s3, 1);
 
 class Filtro {
 
@@ -97,7 +97,7 @@ class Filtro {
     // console.log("antes: ", vetor)
     vetor.shift()
     vetor.pop()
-    // console.log("depois: ", vetor)
+    console.log("depois: ", vetor)
 
     for (let i = 0; i < vetor.length; i++) {
       media += vetor[i]/vetor.length
@@ -145,26 +145,25 @@ class Filtro {
 
 }
 
-// function entrada() {
+function entrada() {
 
-//   console.log("Digite 1 para media simples\nDigite 2 para media movel\nDigite 3 para media ordenada\nDigite 4 para media ponderada\n >> ")
-//   modo = scanf('%d')
-//   console.log(modo)
-//   switch (modo) {
-//     case 1:
-//       break
-//     case 2:
-//       break
-//     case 3:
-//       break
-//     case 4:
-//       break
-//     default:
-//       console.log('errouuuu')
-//       entrada()
-//   }
-// }
-
+  console.log("Digite 1 para media simples\nDigite 2 para media movel\nDigite 3 para media ordenada\nDigite 4 para media ponderada\n >> ")
+  modo = scanf('%d')
+  console.log(modo)
+  switch (modo) {
+    case 1:
+      break
+    case 2:
+      break
+    case 3:
+      break
+    case 4:
+      break
+    default:
+      console.log('errouuuu')
+      entrada()
+  }
+}
 
 function saida(){
 
@@ -205,6 +204,10 @@ function saida(){
       console.log(novo.media_ponderada(ldr1))
     }
 }
+
+entrada()
+setInterval(saida, 100)
+
 
 let ldr_esquerda_frente = [], ldr_direita_frente = [], ldr_esquerda_tras = [], ldr_direita_tras = [], garra_ldr = [], ldr, ldr_matriz = [[2, 2], [2, 2]];
 let j=0, resultado, bloco, nave, garra;
@@ -277,8 +280,8 @@ function ldr_navegacao(){
         j++;
     }else if(j%4 == 2){
         b.digitalWrite(s1, 0);
-        b.digitalWrite(s2, 1);
-        b.digitalWrite(s3, 0);
+        b.digitalWrite(s2, 0);
+        b.digitalWrite(s3, 1);
         ldr = b.analogRead(s0);
         ldr = 1/ldr;
         ldr *= 1000;
@@ -301,8 +304,8 @@ function ldr_navegacao(){
 
     }else if(j%4 == 3){
         b.digitalWrite(s1, 0);
-        b.digitalWrite(s2, 1);
-        b.digitalWrite(s3, 1);
+        b.digitalWrite(s2, 0);
+        b.digitalWrite(s3, 0);
         ldr = b.analogRead(s0);
         ldr = 1/ldr;
         ldr *= 1000;
@@ -404,7 +407,7 @@ function ladar() {
   return true;}
 }
 
-roda_ldr_nave();
+//roda_ldr_nave();
 
 //enquanto o ladar não achar bloco, as leituras são do ldr do chão
 // while (!ladar()) {

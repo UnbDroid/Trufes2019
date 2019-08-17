@@ -131,17 +131,17 @@ class Directions {
   }
   
   goLeft() {
-      rc.motor(this.motor_left_bottom, this.mlb_pwr); // fwd
-      rc.motor(this.motor_left_top, -this.mlt_pwr); // rev
-      rc.motor(this.motor_right_top, -this.mrt_pwr); //fwd
-      rc.motor(this.motor_right_bottom, this.mrb_pwr); // rev
+      rc.motor(this.motor_left_bottom, 0.8); // fwd
+      rc.motor(this.motor_left_top, -0.8); // rev
+      rc.motor(this.motor_right_top, -0.8); //fwd
+      rc.motor(this.motor_right_bottom, 0.8); // rev
   }
   
   goRight() {
-      rc.motor(this.motor_left_bottom, -this.mlb_pwr); //rev
-      rc.motor(this.motor_left_top, this.mlt_pwr); // fwd
-      rc.motor(this.motor_right_top, this.mrt_pwr); //rev
-      rc.motor(this.motor_right_bottom, -this.mrb_pwr); //fwd
+      rc.motor(this.motor_left_bottom, -0.8); //rev
+      rc.motor(this.motor_left_top, 0.8); // fwd
+      rc.motor(this.motor_right_top, 0.8); //rev
+      rc.motor(this.motor_right_bottom, -0.8); //fwd
   }
   
   goBack() {
@@ -221,7 +221,7 @@ class Directions {
     let time = new Date().getTime();
     if (this.prev_time_speed != 0) {
       this.dist += speed * (time - this.prev_time_speed)/1000.0;
-      console.log(this.dist)
+      // console.log(this.dist)
       this.distmm = this.dist*1000
       // console.log(this.angleZ_accel)
     }
@@ -248,11 +248,14 @@ class Directions {
 }
 
 var c = new Directions();
-setInterval(function(){
-  c.move(0, 0)
-  c.goFoward()
-}, 500)
+// setInterval(function(){
+//   c.move(0, 0)
+//   c.goFoward()
+// }, 500)
 
+while(true) {
+  c.goRight()
+}
 
 // setTimeout(function(){
 //   console.log("Angulo em Grau: " + c.angleZ)

@@ -16,7 +16,11 @@ rc.on("PAUSE_PRESSED", function() {
     rc.state("EXITING");
 });
 
+/* Allocate the userspace usage of the robotics cape features */
+rc.initialize();
 
+/* Set the state to RUNNING */
+rc.state("RUNNING");
 rc.motor("ENABLE");
 
 rc.imu("ENABLE");

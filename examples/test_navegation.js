@@ -1,8 +1,11 @@
-'use strict';
-
 let b = require('bonescript');
 let rc = require('roboticscape');
 const { spawnSync } = require( 'child_process' )
+
+let LEFT_BOTTOM_MOTOR = 1
+let LEFT_TOP_MOTOR = 2
+let RIGHT_TOP_MOTOR = 3
+let RIGHT_BOTTOM_MOTOR = 4
 
 let CPR = 1496.88
 let RADIUS = 39.905 // (mm)
@@ -22,51 +25,7 @@ var last_right_speed = 0
 var last_left_enc = 0
 var last_right_enc = 0
 
-
-rc.initialize();
-rc.state("RUNNING");
-rc.motor("ENABLE");
-rc.imu("ENABLE");
-
-let LEFT_BOTTOM_MOTOR = 1
-let LEFT_TOP_MOTOR = 2
-let RIGHT_TOP_MOTOR = 3
-let RIGHT_BOTTOM_MOTOR = 4
-
-let POT_BASE = 0.8
-
-class Directions {
-  
-
-  goFoward() {
-      rc.motor(LEFT_BOTTOM_MOTOR, POT_BASE); //fwd
-      rc.motor(LEFT_TOP_MOTOR, POT_BASE); //fwd
-      rc.motor(RIGHT_TOP_MOTOR, -POT_BASE); //fwd - Right com potencia negativa vai pra frente!
-      rc.motor(RIGHT_BOTTOM_MOTOR, -POT_BASE); //fwd
-  }
-  
-  goLeft() {
-      rc.motor(LEFT_BOTTOM_MOTOR, POT_BASE); // fwd
-      rc.motor(LEFT_TOP_MOTOR, -POT_BASE); // rev
-      rc.motor(RIGHT_TOP_MOTOR, -POT_BASE); //fwd
-      rc.motor(RIGHT_BOTTOM_MOTOR, POT_BASE); // rev
-  }
-  
-  TurnRight(){
-      rc.motor(LEFT_BOTTOM_MOTOR, POT_BASE); 
-      rc.motor(LEFT_TOP_MOTOR, POT_BASE); 
-      rc.motor(RIGHT_TOP_MOTOR, POT_BASE); 
-      rc.motor(RIGHT_BOTTOM_MOTOR, POT_BASE);
-  }
-  
-  TurnLeft(){
-      rc.motor(LEFT_BOTTOM_MOTOR, -POT_BASE); 
-      rc.motor(LEFT_TOP_MOTOR, -POT_BASE); 
-      rc.motor(RIGHT_TOP_MOTOR, -POT_BASE); 
-      rc.motor(RIGHT_BOTTOM_MOTOR, -POT_BASE);
-  }
-  
-  GetDist(){
+function GetDist(){
   let i = 1
   let enc_read = 0
   // let speed = 0
@@ -84,7 +43,25 @@ class Directions {
   return (dist/4.0)
 }
 
-SpeedControlX(distance, direction){
+
+//Z = 2 = FWD or rev
+//Y = 1
+function GetGiro() {
+    let time = new Date().getTime();
+    if(prev_time != 0) {
+       let gyro = rc.imu("READ_GYRO").gyro
+       angle += gyro[2] * (time - prev_time)/1000.0; 
+    }
+    prev_time = time;
+}
+
+function SpeedControlY(distance, direction) {
+  
+}
+
+// direction = 1 fwd
+// direction = -1 rev
+function SpeedControlX(distance, direction){
   let adjust = 0
   let base_pwr = 0.5
   let kp = 4.375, ki = 0.71875 , kd = 7.0 //7265625
@@ -96,7 +73,8 @@ SpeedControlX(distance, direction){
   
   
   setInterval(function(){
-    let dist = this.GetDist()
+    let dist = GetDist()
+    GetGiro()
     
     let error = ((angle*direction)-dir)/1000
     // console.log(angle)
@@ -131,23 +109,12 @@ SpeedControlX(distance, direction){
   },200)
 }
 
-  zeroEncoders(){
-    rc.encoder(this.motor_left_bottom, 0);
-    rc.encoder(this.motor_left_top, 0);
-    rc.encoder(this.motor_right_top, 0);
-    rc.encoder(this.motor_right_bottom, 0);
-  }
-  
-  breakMotors(){
-    rc.motor(4, "BRAKE");
-    rc.motor(3, "BRAKE");
-    rc.motor(2, "BRAKE");
-    rc.motor(1, "BRAKE");
-  }
-  
-  disableMotors(){
-    rc.motor("DISABLE");
-  }
-}
+let config_pin = spawnSync( 'config-pin', [ 'P8_15', 'pruin' ]);
+    
+rc.initialize();
+rc.state("RUNNING");
+rc.motor("ENABLE");
+rc.imu("ENABLE");
 
-var c = new Directions();
+SpeedControlX(1000, 1)
+

@@ -9,10 +9,10 @@
       <p class="zi-title">Dashboard</p>
       <ul>
         <li>
-          <router-link v-bind:to="'/teste'">round view</router-link>
+          <router-link v-bind:to="'/roundview'">round view</router-link>
         </li>
         <li >
-          <router-link v-bind:to="'/second'" class="">round info</router-link>
+          <router-link v-bind:to="'/roundinfo'" class="">round info</router-link>
         </li>
       </ul>
 

@@ -3,21 +3,16 @@
 let Communication = require("./Communication");
 let rc = require('roboticscape');
 var spawn = require('child_process').spawn;
+var math = require('mathjs')
 
 
 class Directions {
 
   constructor () {
-    // let conf_e4 = spawn('config-pin P8_15 pruin')
-    // conf_e4.on('data', function (data) {
-    //   console.log(data);
-    // });
-    
     rc.initialize();
     rc.state("RUNNING");
     rc.motor("ENABLE");
-    
-  
+    rc.imu("ENABLE");
     
     this.motor_left_bottom = 1
     this.motor_left_top = 2
@@ -25,7 +20,7 @@ class Directions {
     this.motor_right_bottom = 4
     
     
-    let base_pwr = 0.3
+    let base_pwr = 0.0
     this.mlb_pwr = base_pwr
     this.mlt_pwr = base_pwr
     this.mrt_pwr = base_pwr
@@ -33,43 +28,207 @@ class Directions {
     
     this.integral = 0.0
     this.lastError = 0.0
+    
+    this.periodo = 2 //ms
+    this.left_speed = 0.0
+    this.right_speed = 0.0
 
-  }
-
-  async goFoward() {
-      rc.motor(this.motor_left_bottom, this.mlb_pwr); //fwd
-      rc.motor(this.motor_left_top, this.mlt_pwr); //fwd
-      rc.motor(this.motor_right_top, -this.mrt_pwr); //fwd - Right com potencia negativa vai pra frente!
-      rc.motor(this.motor_right_bottom, -this.mrb_pwr); //fwd
-      this.calculatePID()
+    this.last_left_speed = 0.0
+    this.last_right_speed = 0.0
+    this.last_left_enc = 0.0
+    this.last_right_enc = 0.0
+    
+    this.prev_time_di = 0
+    
+    // this.gyro = 0;
+    this.angleZ = 0; 
+    this.prev_time = 0;
+    
+    this.angleZ_accel = 0;
+    this.prev_time_accel = 0
+    
+    this.dist = 0
+    this.distmm = 0
+    this.prev_time_speed = 0
+    this.disc_integrator = math.matrix([[0], [0]])
+    
+    this.fe = math.matrix([[0, 0, 0, 0],
+                           [0, 0, 0, 0]])
+    this.fi = math.matrix([[0, 0],
+                           [0, 0]])
+                           
+    let self = this
+    setInterval(function() {
+      self.leftSpeed()
+      self.rightSpeed()
+    }, self.periodo)
+    
+    setInterval(function() {
+        self.getGiro()
+        self.getSpeed()
+    }, 0.1)
   }
   
-  goLeft(){
+  move(dist, orient) {
+    let ref_mat = math.matrix([[dist], [orient]])
+    this.control(ref_mat)
+  }
+  
+  control(ref_mat) {
+    let dist = this.distmm
+    let gyro_angle = this.angleZ
+    let system_values = math.matrix([[dist], [this.degToRad(gyro_angle)], [this.left_speed], [this.right_speed]]);
+    console.log("INPUT = " + system_values)
+    let feedback_mat = math.matrix([[dist], [gyro_angle]])
+    console.log(feedback_mat)
+    let FeU = math.multiply(this.fe, system_values)
+    console.log(FeU)
+    let ref_feedback = math.subtract(ref_mat, feedback_mat)
+    console.log(ref_feedback)
+  
+    let time = new Date().getTime();
+    if (this.prev_time_di != 0) {
+      let ele1 = this.disc_integrator.get([0, 0]) + ref_feedback.get([0, 0]) * (time - this.prev_time_di)/1000.0;
+      let ele2 = this.disc_integrator.get([1, 0]) + ref_feedback.get([1, 0]) * (time - this.prev_time_di)/1000.0;
+      this.disc_integrator = math.matrix([[ele1], [ele2]])
+    }
+    this.prev_time_di = time;
+
+    let FiU = math.multiply(this.fi, this.disc_integrator)
+    FiU = math.multiply(FiU, -1)
+    let sinal = math.subtract(FiU, FeU)
+    console.log("Sinal ===============")
+    console.log(sinal)
+    
+    let left_adjust = sinal.get([0, 0])
+    let right_adjust = sinal.get([1, 0])
+    
+    if (left_adjust > 95) {
+      left_adjust = 95
+    } else if (left_adjust < -95) {
+      left_adjust = -95
+    }
+    
+    if (right_adjust > 95) {
+      right_adjust = 95
+    } else if (right_adjust < -95) {
+      right_adjust = -95
+    }
+    
+    left_adjust /= 100
+    right_adjust /= 100
+    
+    this.left_pwr = left_adjust
+    this.right_pwr = right_adjust
+    
+  }
+
+  goFoward() {
+      rc.motor(this.motor_left_bottom, this.left_pwr); //fwd
+      rc.motor(this.motor_left_top, this.left_pwr); //fwd
+      rc.motor(this.motor_right_top, -this.right_pwr); //fwd - Right com potencia negativa vai pra frente!
+      rc.motor(this.motor_right_bottom, -this.right_pwr); //fwd
+  }
+  
+  goLeft() {
       rc.motor(this.motor_left_bottom, this.mlb_pwr); // fwd
       rc.motor(this.motor_left_top, -this.mlt_pwr); // rev
       rc.motor(this.motor_right_top, -this.mrt_pwr); //fwd
       rc.motor(this.motor_right_bottom, this.mrb_pwr); // rev
-      this.calculatePID()
   }
   
-  goRight(){
-    rc.motor(this.motor_left_bottom, -this.mlb_pwr); //rev
+  goRight() {
+      rc.motor(this.motor_left_bottom, -this.mlb_pwr); //rev
       rc.motor(this.motor_left_top, this.mlt_pwr); // fwd
       rc.motor(this.motor_right_top, this.mrt_pwr); //rev
       rc.motor(this.motor_right_bottom, -this.mrb_pwr); //fwd
-      this.calculatePID()
   }
   
-  goBack(){
+  goBack() {
       rc.motor(this.motor_left_bottom, -this.mlb_pwr); //rev
       rc.motor(this.motor_left_top, -this.mlt_pwr); //rev
       rc.motor(this.motor_right_top, this.mrt_pwr); //rev
       rc.motor(this.motor_right_bottom, this.mrb_pwr); //rev
-      this.calculatePID()
   }
   
+  leftSpeed() {
+    let mlb_enc = rc.encoder(this.motor_left_bottom)
+    let mlt_enc = rc.encoder(this.motor_left_top)
+    // console.log(mlb_enc, mlt_enc)
+
+    let enc_read = (mlb_enc + mlt_enc)/2.0
   
-   zeroEncoders(){
+    this.left_speed = ((30*enc_read) - (30*this.last_left_enc) + (Math.exp(-30*this.periodo) * this.last_left_speed))*-1
+    
+    this.last_left_speed = this.left_speed
+    this.last_left_enc = enc_read
+  }
+  
+  rightSpeed() {
+    let mrt_enc = rc.encoder(this.motor_right_top)
+    let mrb_enc = rc.encoder(this.motor_right_bottom)
+    // console.log(mrt_enc, mrb_enc)
+
+    let enc_read = (mrt_enc + mrb_enc)/2.0
+  
+    this.right_speed = (30*enc_read) - (30*this.last_right_enc) + (Math.exp(-30*this.periodo) * this.last_right_speed)
+    
+    this.last_right_speed = this.right_speed
+    this.last_right_enc = enc_read
+  }
+  
+  getGiro() {
+    let time = new Date().getTime();
+    if(this.prev_time != 0) {
+       let gyro = rc.imu("READ_GYRO").gyro
+       this.angleZ += gyro[2] * (time - this.prev_time)/1000.0; 
+    }
+    this.prev_time = time;
+  }
+  
+  degToRad(deg) {
+    return (deg * Math.PI) / 180
+  }
+  
+  radToDeg(rad) {
+    return rad * 180 / Math.PI;
+  }
+
+  // getDist() {
+  //   let time = new Date().getTime();
+  //   if (this.prev_time_accel != 0) {
+  //     let accel = rc.imu("READ_ACCEL").accel
+  //     this.angleZ_accel += accel[0] * (time - this.prev_time_accel)/1000.0; 
+  //     this.dist += (this.angleZ_accel * (time - this.prev_time_accel)/1000.0);
+  //     this.distmm = this.dist*1000
+  
+  //   }
+  //   this.prev_time_accel = time;
+  // }
+
+  getSpeed() {
+    let time = new Date().getTime();
+    if (this.prev_time_accel != 0) {
+      let accel = rc.imu("READ_ACCEL").accel
+      this.angleZ_accel += accel[0] * (time - this.prev_time_accel)/1000.0; 
+      // console.log(this.angleZ_accel)
+    }
+    this.prev_time_accel = time;
+    this.getDist(this.angleZ_accel)
+  }
+  
+  getDist(speed) {
+    let time = new Date().getTime();
+    if (this.prev_time_speed != 0) {
+      this.dist += speed * (time - this.prev_time_speed)/1000.0;
+      console.log(this.dist)
+      this.distmm = this.dist*1000
+      // console.log(this.angleZ_accel)
+    }
+    this.prev_time_speed = time
+  }
+
+  zeroEncoders(){
     rc.encoder(this.motor_left_bottom, 0);
     rc.encoder(this.motor_left_top, 0);
     rc.encoder(this.motor_right_top, 0);
@@ -77,100 +236,31 @@ class Directions {
   }
   
   breakMotors(){
-    rc.motor(1, "BRAKE");
-    rc.motor(2, "BRAKE");
-    rc.motor(3, "BRAKE");
     rc.motor(4, "BRAKE");
+    rc.motor(3, "BRAKE");
+    rc.motor(2, "BRAKE");
+    rc.motor(1, "BRAKE");
   }
   
   disableMotors(){
     rc.motor("DISABLE");
   }
-  
-  
-  async calculatePID() {
-      let KP = 0.0000004
-      let KI = 0.0000000
-      let KD = 0.0000000
-      let mlb_enc = rc.encoder(this.motor_left_bottom)
-      let mlt_enc = rc.encoder(this.motor_left_top)
-      let mrt_enc = rc.encoder(this.motor_right_top)
-      let mrb_enc = rc.encoder(this.motor_right_bottom)
-      let error_left = (Math.abs(mlt_enc) + Math.abs(mlb_enc))/2.0;
-      let error_right = (Math.abs(mrt_enc) + Math.abs(mrb_enc))/2.0;
-      let error = error_left - error_right;
-      
-
-      this.integral += error;
-      
-      if (this.integral > 100) {
-          this.integral = 100;
-      } else if (this.integral < -100) {
-          this.integral = -100;
-      }
-      
-      let derivate = error - this.lastError;
-      let adjust = (KP * error) + (KI*this.integral) + (KD*derivate);
-      console.log("Ajuste: " + adjust)
-      console.log("Erro: " + error)
-      
-      this.mlt_pwr -= adjust
-      this.mlb_pwr -= adjust
-      this.mrt_pwr += adjust
-      this.mrt_pwr += adjust
-      
-      console.log(mlb_enc, mlt_enc, mrt_enc, mrb_enc)
-      
-      // comm.sendEncoderValues(mlb_enc, mlt_enc, mrt_enc, mrb_enc);
-      // this.comm.sendPIDValues(adjust, error, this.integral, derivate, KP, KI, KD,
-                                  // error_left, error_right, mlb_enc, mlt_enc, mrt_enc, mrb_enc);
-      // this.comm.sendMotorValues(this.mlb_pwr, this.mlt_pwr, this.mrt_pwr, this.mrt_pwr)  
-        
-      this.lastError = error;
-    }
 }
 
 var c = new Directions();
-let comm = new Communication();
-while(true) {
-  c.goFoward();  
-}
+setInterval(function(){
+  c.move(0, 0)
+  c.goFoward()
+}, 500)
 
 
-
-
-
-
-// const readline = require('readline');
-// readline.emitKeypressEvents(process.stdin);
-// process.stdin.setRawMode(true);
-
-
-// process.stdin.on('keypress', (str, key) => {
-//   if (key.ctrl && key.name === 'c') {
-//     console.log("Entro aqui2")
-//     process.exit();
-//   } else {
-//     if (key.name === 'w') {
-//       console.log("Frente")
-//       c.breakMotors()
-//       c.goFoward();
-//     } else if (key.name === 'a') {
-//       console.log("Esquerda")
-//       c.breakMotors()
-//       c.goLeft();
-//     } else if (key.name === 's') {
-//       console.log("Direita")
-//       c.breakMotors()
-//       c.goBack();
-//     } else  if (key.name === 'd') {
-//       console.log("Re")
-//       c.breakMotors()
-//       c.goRight();
-//     } else {
-//       c.breakMotors()
-//     }
-//   }
-// });
+// setTimeout(function(){
+//   console.log("Angulo em Grau: " + c.angleZ)
+//   console.log("Angulo em Radiano: " + c.radGiro(c.angleZ))
+//   console.log("Left Speed: " + c.left_speed)
+//   console.log("Right Speed: " + c.right_speed)
+//   console.log("Distancia: " + c.dist)
+//   c.breakMotors()
+// },2000)
 
 // module.exports = Directions;

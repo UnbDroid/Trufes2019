@@ -5,19 +5,83 @@
       <b-row class="card-row">
         <b-col>
           <zi-card dark>
-            <h1>Motores</h1>
+            <h1>Motors</h1>
           </zi-card>
         </b-col>
       </b-row>
 
       <b-collapse id="collapse-motors">
-        <zi-card hoverable="hoverable">
-          <zi-row style="margin-top: 20px;">
-            <zi-col class="first" span="8"><p>Motor 1</p></zi-col>
-            <zi-col class="last"><zi-progress percentage="20"></zi-progress></zi-col>
+        <zi-card hoverable="hoverable" class="card-row">
+          <zi-row style="margin-top: 20px; margin-bottom:20px;">
+            <zi-col>
+              Motor 1
+            </zi-col>
+            <zi-col>
+              <zi-progress class="progress" :percentage="30" color="#f56c6c" :show-text="false">
+              </zi-progress>
+            </zi-col>
+            <zi-col>
+              <zi-badge count="0.300" style="margin-left: 10px;"></zi-badge>
+            </zi-col>
+            <zi-col>
+              <zi-tag>FWD</zi-tag>
+            </zi-col>
           </zi-row>
         </zi-card>
 
+        <zi-card hoverable="hoverable" class="card-row">
+          <zi-row style="margin-top: 20px; margin-bottom:20px;">
+            <zi-col>
+              Motor 2
+            </zi-col>
+            <zi-col>
+              <zi-progress class="progress" :percentage="30" color="#f56c6c" :show-text="false">
+              </zi-progress>
+            </zi-col>
+            <zi-col>
+              <zi-badge count="0.300" style="margin-left: 10px;"></zi-badge>
+            </zi-col>
+            <zi-col>
+              <zi-tag>FWD</zi-tag>
+            </zi-col>
+          </zi-row>
+        </zi-card>
+
+        <zi-card hoverable="hoverable" class="card-row">
+          <zi-row style="margin-top: 20px; margin-bottom:20px;">
+            <zi-col>
+              Motor 3
+            </zi-col>
+            <zi-col>
+              <zi-progress class="progress" :percentage="30" color="#f56c6c" :show-text="false">
+              </zi-progress>
+            </zi-col>
+            <zi-col>
+              <zi-badge count="0.300" style="margin-left: 10px;"></zi-badge>
+            </zi-col>
+            <zi-col>
+              <zi-tag>FWD</zi-tag>
+            </zi-col>
+          </zi-row>
+        </zi-card>
+
+        <zi-card hoverable="hoverable" class="card-row">
+          <zi-row style="margin-top: 20px; margin-bottom:20px;">
+            <zi-col>
+              Motor 4
+            </zi-col>
+            <zi-col>
+              <zi-progress class="progress" :percentage="30" color="#f56c6c" :show-text="false">
+              </zi-progress>
+            </zi-col>
+            <zi-col>
+              <zi-badge count="0.300" style="margin-left: 10px;"></zi-badge>
+            </zi-col>
+            <zi-col>
+              <zi-tag>FWD</zi-tag>
+            </zi-col>
+          </zi-row>
+        </zi-card>
       </b-collapse>
 
     </b-container>
@@ -48,4 +112,7 @@ export default {
 </script>
 
 <style lang="css" scoped>
+.card-row{
+  margin-top: 10px;
+}
 </style>
